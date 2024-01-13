@@ -4,17 +4,18 @@ const questionsContainer = document.getElementById("questions");
 const questionsTitle = document.getElementById("question-title");
 const feedbackContainer = document.getElementById("feedback");
 
-
 let currentQuestionIndex = 0; // Keep track of the current question index
-
 let timer;
-let timeLeft = 50;
+let timeLeft = 40;
+let userScore = 0; // Initialize user's score
+
 questionsTitle.innerHTML = 'Answer the question below';
 
 // Function to update the timer display
 function updateTimer() {
     document.getElementById("time").textContent = timeLeft;
 }
+
 // Function to start the timer
 function startTimer() {
     timer = setInterval(function () {
@@ -30,7 +31,6 @@ function startTimer() {
         }
     }, 1000); // Update every 1000ms (1 second)
 }
-
 
 // Removes the start-screen when the start quiz button is clicked and shows questions
 function startQuiz() {
@@ -69,24 +69,28 @@ function displayQuestion(index) {
         choiceButton.setAttribute("name", `question-${index}`);
         choiceButton.setAttribute("value", questions[index].choices[choice]);
         choiceButton.innerHTML = questions[index].choices[choice];
-        
 
         // Add event listener to each choice button
         choiceButton.addEventListener("click", function () {
             localStorage.setItem(`question ${index}`, questions[index].choices[choice]);
             var userAnswer = questions[index].choices[choice];
-            var actualAnswer = questions[index].answer
+            var actualAnswer = questions[index].answer;
             feedbackContainer.classList.remove("hide");
-            //short hand if statment
+            
+            // Short-hand if statement
             feedbackContainer.innerHTML = userAnswer === actualAnswer ? "<h2>Correct!</h2>" : "<h2>Incorrect!</h2>";
-        
+
+            // Update the user's score based on the correctness of the answer
+            if (userAnswer === actualAnswer) {
+                userScore += 5; // Each correct answer is worth 5 points
+            }
+
             // Hide the message after 1 second
             setTimeout(function () {
                 feedbackContainer.classList.add("hide");
             }, 1000);
-        
+
             // Move to the next question after the user answers
-            
             currentQuestionIndex++;
 
             // Display the next question if available
@@ -94,7 +98,7 @@ function displayQuestion(index) {
                 displayQuestion(currentQuestionIndex);
             } else {
                 // End of the quiz
-                questionsContainer.innerHTML = "<h2>End of the quiz.</h2>";
+                endQuiz();
             }
         });
 
@@ -105,11 +109,16 @@ function displayQuestion(index) {
     questionDiv.appendChild(choicesDiv);
 }
 
+// Function to display the end screen with the user's score
+function displayEndScreen() {
+    questionsContainer.innerHTML = `<h2>Your all done!</h2><p>Your final score is: ${userScore} points</p>`;
+}
+
 // Function to end the quiz
 function endQuiz() {
     clearInterval(timer); // Stop the timer
-    questionsContainer.innerHTML = "<h2>End of the quiz.</h2>";
-    // Additional logic to handle the end of the quiz
+    localStorage.setItem("userScore", userScore); // Save the user's score in localStorage
+    displayEndScreen();
 }
 
 startButton.addEventListener("click", startQuiz);
