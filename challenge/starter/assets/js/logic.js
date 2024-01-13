@@ -2,6 +2,8 @@ const startButton = document.getElementById("start");
 const startScreen = document.getElementById("start-screen");
 const questionsContainer = document.getElementById("questions");
 const questionsTitle = document.getElementById("question-title");
+const feedbackContainer = document.getElementById("feedback");
+
 
 let currentQuestionIndex = 0; // Keep track of the current question index
 
@@ -51,7 +53,7 @@ function displayQuestion(index) {
     questionDiv.classList.add("question");
 
     // Set the question title
-    questionDiv.innerHTML = `<h2>${questions[index].question}</h2>`;
+    questionDiv.innerHTML = `<h2>${questions[index].question}</h2><hr><br>`;
 
     // Append the question div to the questions container
     questionsContainer.appendChild(questionDiv);
@@ -67,19 +69,32 @@ function displayQuestion(index) {
         choiceButton.setAttribute("name", `question-${index}`);
         choiceButton.setAttribute("value", questions[index].choices[choice]);
         choiceButton.innerHTML = questions[index].choices[choice];
+        
 
         // Add event listener to each choice button
         choiceButton.addEventListener("click", function () {
-            saveAnswerToLocalStorage(`question ${index}`, this.value);
+            localStorage.setItem(`question ${index}`, questions[index].choices[choice]);
+            var userAnswer = questions[index].choices[choice];
+            var actualAnswer = questions[index].answer
+            feedbackContainer.classList.remove("hide");
+            //short hand if statment
+            feedbackContainer.innerHTML = userAnswer === actualAnswer ? "<h2>Correct!</h2>" : "<h2>Incorrect!</h2>";
+        
+            // Hide the message after 1 second
+            setTimeout(function () {
+                feedbackContainer.classList.add("hide");
+            }, 1000);
+        
             // Move to the next question after the user answers
+            
             currentQuestionIndex++;
+
             // Display the next question if available
             if (currentQuestionIndex < questions.length) {
                 displayQuestion(currentQuestionIndex);
             } else {
                 // End of the quiz
                 questionsContainer.innerHTML = "<h2>End of the quiz.</h2>";
-                // clearInterval(0); // Stop the timer
             }
         });
 
@@ -97,9 +112,4 @@ function endQuiz() {
     // Additional logic to handle the end of the quiz
 }
 
-
-function saveAnswerToLocalStorage(questionKey, answer) {
-    // Save the selected answer to localStorage
-    localStorage.setItem(questionKey, answer);
-}
 startButton.addEventListener("click", startQuiz);
