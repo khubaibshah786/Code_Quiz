@@ -25,6 +25,5 @@ const questions = [
       choices: ["//", "--", "/*", "#"],
       answer: "//"
     },
-    // Add more questions as needed
   ];
   
