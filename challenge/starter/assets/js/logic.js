@@ -3,6 +3,12 @@ const startScreen = document.getElementById("start-screen");
 const questionsContainer = document.getElementById("questions");
 const questionsTitle = document.getElementById("question-title");
 const feedbackContainer = document.getElementById("feedback");
+const finalScore = document.getElementById("final-score");
+const endScreen = document.getElementById("end-screen");
+const initialsInput = document.getElementById("initials");
+const submitButton = document.getElementById("submit");
+const highscores = document.getElementById("highscores");
+const highscoreswrapper = document.getElementById("wrapper");
 
 let currentQuestionIndex = 0; // Keep track of the current question index
 let timer;
@@ -38,7 +44,12 @@ function startQuiz() {
     questionsContainer.classList.remove("hide");
 
     startTimer();
-
+    // Remove any questions saved from localStorage if the key has question or userScore in the word,
+    for (const key in localStorage) {
+        if (localStorage.hasOwnProperty(key) && (key.includes('question') || key.includes('userScore'))) {
+            localStorage.removeItem(key);
+        }
+    }
     // Display the first question
     displayQuestion(0);
 }
@@ -101,7 +112,7 @@ function displayQuestion(index) {
                 endQuiz();
             }
         });
-
+        //Append to the end of the choices Div
         choicesDiv.appendChild(choiceButton);
     }
 
@@ -109,9 +120,33 @@ function displayQuestion(index) {
     questionDiv.appendChild(choicesDiv);
 }
 
-// Function to display the end screen with the user's score
 function displayEndScreen() {
-    questionsContainer.innerHTML = `<h2>Your all done!</h2><p>Your final score is: ${userScore} points</p>`;
+    questionsContainer.classList.add("hide");
+    endScreen.classList.remove("hide");
+    document.getElementById("final-score").textContent = userScore;
+    submitButton.addEventListener("click", function () {
+        const initials = initialsInput.value.trim(); // Get user input and trim any leading/trailing spaces
+        if (initials) {
+            // Retrieve existing data from local storage
+            const existingData = JSON.parse(localStorage.getItem("highscores")) || [];
+
+            // Add the new score and initials to the array
+            existingData.push({ initials, userScore });
+
+            // Save the updated array back to local storage
+            localStorage.setItem("highscores", JSON.stringify(existingData));
+
+            // Redirect to the score page
+            highScoresPage();
+        } else {
+            // Handle case where initials are not provided
+            alert("Please enter your initials.");
+        }
+    });
+}
+function highScoresPage() {
+    // Redirect to the highscores page
+    location.href = '../starter/highscores.html';
 }
 
 // Function to end the quiz
@@ -121,4 +156,5 @@ function endQuiz() {
     displayEndScreen();
 }
 
+// Once the start button is clicked then excecute the startQuiz function
 startButton.addEventListener("click", startQuiz);
