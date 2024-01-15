@@ -87,7 +87,7 @@ function displayQuestion(index) {
             var userAnswer = questions[index].choices[choice];
             var actualAnswer = questions[index].answer;
             feedbackContainer.classList.remove("hide");
-            
+
             // Short-hand if statement
             feedbackContainer.innerHTML = userAnswer === actualAnswer ? "<h2>Correct!</h2>" : "<h2>Incorrect!</h2>";
 
