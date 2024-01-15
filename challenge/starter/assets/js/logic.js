@@ -146,7 +146,7 @@ function displayEndScreen() {
 }
 function highScoresPage() {
     // Redirect to the highscores page
-    location.href = '../starter/highscores.html';
+    location.href = 'highscores.html';
 }
 
 // Function to end the quiz
